@@ -221,9 +221,22 @@ This is what worked best; keep it:
   project is the proof that the cycle works.
 - Run `git init` at the start. Memorandum had no repository and every bulk edit
   had to be backed up by hand.
-- **The repository is Alan's and only Alan's.** Commit as `APV-DevGame
-  <alanpomaresv@gmail.com>`, with no `Co-Authored-By` and no session trailer.
-  These are personal projects and the history should read like one.
+
+### Authorship and the repository
+
+These are personal projects. The history and the repository belong to Alan
+alone, and nothing in them should say otherwise.
+
+- **Commit as `APV-DevGame <alanpomaresv@gmail.com>`.** That is the identity in
+  the global git config; do not override it with anything else.
+- **No `Co-Authored-By` and no session trailer.** Claude designed the
+  architecture and wrote the plumbing, and that is what this document is for.
+  It does not go in the commit messages.
+- **New repositories are created private.** Making one public is Alan's
+  decision and his alone, so ask before doing it, never after. Memorandum being
+  public is not a precedent for the next one.
+- Commit messages say what changed and why, in English, in the same plain voice
+  as the rest of the project.
 
 ---
 
