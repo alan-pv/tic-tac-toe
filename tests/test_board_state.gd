@@ -108,6 +108,8 @@ func test_the_warning_points_at_the_oldest_mark() -> void:
 	board.place(1, Mark.Value.X)
 	eq(board.next_to_vanish(Mark.Value.X), -1, "still below the limit")
 	board.place(2, Mark.Value.X)
+	
+	print(board.order_for(Mark.Value.X))
 	eq(board.next_to_vanish(Mark.Value.X), 0, "the oldest X is the one at risk")
 
 

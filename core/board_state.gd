@@ -83,7 +83,8 @@ static func column_of(index: int) -> int:
 ## computed, and an out-of-range read here would take the whole match down
 ## instead of just pruning a branch.
 func mark_at(index: int) -> int:
-	# TODO(you)
+	if index in range(9):
+		return cells[index]
 	return Mark.Value.NONE
 
 
@@ -91,8 +92,7 @@ func mark_at(index: int) -> int:
 ##
 ##   the cell has to be inside the board, and it has to hold NONE
 func is_free(index: int) -> bool:
-	# TODO(you)
-	return false
+	return (index in range(9)) and (cells[index] == Mark.Value.NONE)
 
 
 ## Every cell that can still be played, in board order.
@@ -104,8 +104,11 @@ func is_free(index: int) -> bool:
 ## want here, while `range(1, CELL_COUNT)` would quietly skip the top-left
 ## corner and the bot would never play there.
 func free_indices() -> Array[int]:
-	# TODO(you)
-	return []
+	var _free: Array[int] = []
+	for i in CELL_COUNT:
+		if is_free(i):
+			_free.append(i)
+	return _free
 
 
 ## Puts a mark on the board.
@@ -135,8 +138,21 @@ func free_indices() -> Array[int]:
 ##   Array.is_empty()     true when it has no elements
 ##   push_warning(text)   yellow message in Output, does NOT stop execution
 func place(index: int, mark: int) -> int:
-	# TODO(you)
-	return -1
+	if not is_free(index):
+		push_warning("Ocupied")
+		return -1
+	
+	var order_mark: Array[int] = order_for(mark)
+	var vanish := -1 
+	
+	if max_marks_per_player != 0 and order_mark.size() >= max_marks_per_player:
+		vanish = order_mark.pop_front() 
+		cells[vanish] = Mark.Value.NONE
+	
+	cells[index] = mark
+	order_mark.append(index)
+	
+	return vanish
 
 
 ## Which cell of that player will be emptied by their NEXT move, or -1 if their
@@ -147,7 +163,9 @@ func place(index: int, mark: int) -> int:
 ##   if the player is still below the limit, nothing vanishes yet either
 ##   otherwise it is their oldest mark
 func next_to_vanish(mark: int) -> int:
-	# TODO(you)
+	var order_mark: Array[int] = order_for(mark)
+	if max_marks_per_player != 0 and order_mark.size() >= max_marks_per_player:
+		return order_mark[0]
 	return -1
 
 
@@ -158,8 +176,7 @@ func next_to_vanish(mark: int) -> int:
 ## In infinite mode this should never become true: that is exactly why
 ## GameConfig refuses limits that would let both players fill the board.
 func is_full() -> bool:
-	# TODO(you)
-	return false
+	return free_indices().is_empty()
 
 
 # ---------------------------------------------------------------- plumbing

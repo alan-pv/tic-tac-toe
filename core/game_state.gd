@@ -75,8 +75,7 @@ func match_winner() -> int:
 ##   nobody may play once the match is over
 ##   the cell has to be free
 func can_play(index: int) -> bool:
-	# TODO(you)
-	return false
+	return board.is_free(index)
 
 
 ## Plays the current player's mark and reports what happened.
@@ -113,8 +112,30 @@ func can_play(index: int) -> bool:
 ##   MoveResult.new()     a fresh result, invalid until you fill it in
 ##   my_signal.emit(a, b) fires the signal right there, synchronously
 func play(index: int) -> MoveResult:
-	# TODO(you)
-	return MoveResult.new()
+	if not can_play(index):
+		return MoveResult.new()
+	
+	var mark := mark_for_player(index)
+	var vanish := board.place(index, mark)
+	var move := MoveResult.new()
+	move.index = index
+	move.mark = mark
+	move.vanished_index = vanish
+	
+	var line := GameRules.winning_line(board, mark)
+	if not line.is_empty():
+		move.line = line
+		scores[current_player] += 1
+		score_changed.emit(current_player, scores[current_player])
+		return move
+	elif GameRules.is_draw(board):
+		move.is_draw = true
+		return move
+	else:
+		current_player += 1
+		current_player = current_player % PLAYER_COUNT
+		turn_changed.emit(current_player)
+		return move
 
 
 ## Clears everything a round owns and hands the opening move to somebody.
@@ -126,13 +147,14 @@ func play(index: int) -> MoveResult:
 ## Leave the scores alone: they belong to the match, not to the round. If you
 ## reset them here, the match can never end and game.gd will loop forever.
 func start_round(starting_player: int) -> void:
-	# TODO(you)
-	pass
+	board = BoardState.new(config.max_marks())
+	round_number += 1
+	current_player = starting_player
+	turn_changed.emit(starting_player)
 
 
 ## True once somebody has won enough rounds to take the match.
 ##
 ##   somebody's score has reached what the configuration asks for
 func is_match_over() -> bool:
-	# TODO(you)
-	return false
+	return config.rounds_to_win == scores[current_player]

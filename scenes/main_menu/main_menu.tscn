@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://bc0anitmillfm"]
 
-[ext_resource type="Script" path="res://scenes/main_menu/main_menu.gd" id="1_menu"]
+[ext_resource type="Script" uid="uid://c85ri6aipi6o7" path="res://scenes/main_menu/main_menu.gd" id="1_menu"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=616078594]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_menu")
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="CenterContainer" parent="." unique_id=126850721]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,54 +20,54 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="VBox" type="VBoxContainer" parent="Center"]
+[node name="VBox" type="VBoxContainer" parent="Center" unique_id=1590345150]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 6
 
-[node name="Title" type="Label" parent="Center/VBox"]
+[node name="Title" type="Label" parent="Center/VBox" unique_id=506845537]
 layout_mode = 2
 theme_override_font_sizes/font_size = 92
 text = "Tic Tac Toe"
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="Center/VBox"]
+[node name="Subtitle" type="Label" parent="Center/VBox" unique_id=1764266561]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.49803922, 0.37254903, 1)
 theme_override_font_sizes/font_size = 22
 text = "three in a row, forever"
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="Center/VBox"]
+[node name="Spacer" type="Control" parent="Center/VBox" unique_id=390575962]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Buttons" type="VBoxContainer" parent="Center/VBox"]
+[node name="Buttons" type="VBoxContainer" parent="Center/VBox" unique_id=1218734101]
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
 theme_override_constants/separation = 10
 
-[node name="PlayButton" type="Button" parent="Center/VBox/Buttons"]
+[node name="PlayButton" type="Button" parent="Center/VBox/Buttons" unique_id=58762577]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 text = "Play"
 
-[node name="HowToButton" type="Button" parent="Center/VBox/Buttons"]
+[node name="HowToButton" type="Button" parent="Center/VBox/Buttons" unique_id=711919866]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 text = "How to play"
 
-[node name="QuitButton" type="Button" parent="Center/VBox/Buttons"]
+[node name="QuitButton" type="Button" parent="Center/VBox/Buttons" unique_id=96523343]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 text = "Quit"
 
-[node name="HelpPanel" type="Control" parent="."]
+[node name="HelpPanel" type="Control" parent="." unique_id=1959568656]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
@@ -77,7 +77,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Dim" type="ColorRect" parent="HelpPanel"]
+[node name="Dim" type="ColorRect" parent="HelpPanel" unique_id=1728882447]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -86,7 +86,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.07058824, 0.07058824, 0.07058824, 0.8)
 
-[node name="Center" type="CenterContainer" parent="HelpPanel"]
+[node name="Center" type="CenterContainer" parent="HelpPanel" unique_id=793323231]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -95,21 +95,21 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Panel" type="PanelContainer" parent="HelpPanel/Center"]
+[node name="Panel" type="PanelContainer" parent="HelpPanel/Center" unique_id=338718503]
 custom_minimum_size = Vector2(600, 0)
 layout_mode = 2
 
-[node name="VBox" type="VBoxContainer" parent="HelpPanel/Center/Panel"]
+[node name="VBox" type="VBoxContainer" parent="HelpPanel/Center/Panel" unique_id=498161024]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="HelpTitle" type="Label" parent="HelpPanel/Center/Panel/VBox"]
+[node name="HelpTitle" type="Label" parent="HelpPanel/Center/Panel/VBox" unique_id=1235931587]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "How to play"
 horizontal_alignment = 1
 
-[node name="HelpText" type="Label" parent="HelpPanel/Center/Panel/VBox"]
+[node name="HelpText" type="Label" parent="HelpPanel/Center/Panel/VBox" unique_id=654916135]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.69803923, 0.69803923, 0.69803923, 0.78)
 theme_override_font_sizes/font_size = 20
@@ -122,7 +122,7 @@ The mark that is about to disappear is drawn faded, so you can see it coming.
 Whoever wins enough rounds takes the match."
 autowrap_mode = 3
 
-[node name="CloseHelpButton" type="Button" parent="HelpPanel/Center/Panel/VBox"]
+[node name="CloseHelpButton" type="Button" parent="HelpPanel/Center/Panel/VBox" unique_id=259231102]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Got it"

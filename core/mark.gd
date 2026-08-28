@@ -26,7 +26,10 @@ enum Value {
 ## turns. Get it wrong and the turn order breaks everywhere at once, which will
 ## look like a bug in game.gd instead of a bug here. tests/test_mark.gd covers it.
 static func opponent(mark: int) -> int:
-	# TODO(you)
+	if mark == Value.X:
+		return Value.O
+	if mark == Value.O:
+		return Value.X
 	return Value.NONE
 
 
