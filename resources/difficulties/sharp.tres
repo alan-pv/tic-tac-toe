@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DifficultyPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://core/difficulty_preset.gd" id="1_preset"]
+
+[resource]
+script = ExtResource("1_preset")
+id = &"sharp"
+display_name = "Sharp"
+description = "Takes a win when it sees one and blocks yours."
+bot_think_time = 0.45
+bot_skill = 0.75
