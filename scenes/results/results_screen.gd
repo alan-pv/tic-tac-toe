@@ -44,4 +44,4 @@ func _show_result() -> void:
 
 	var rounds: int = result.get("rounds_played", 0)
 	var seconds: float = result.get("seconds", 0.0)
-	_detail_label.text = "%d rounds  ·  %02d:%02d" % [rounds, int(seconds) / 60, int(seconds) % 60]
+	_detail_label.text = "%d rounds  -  %02d:%02d" % [rounds, int(seconds) / 60, int(seconds) % 60]

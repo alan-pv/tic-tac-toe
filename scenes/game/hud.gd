@@ -38,7 +38,7 @@ func setup(config: GameConfig) -> void:
 		_entries.append(entry)
 
 	if config.infinite_mode:
-		_mode_label.text = "Infinite  ·  %d marks each" % config.max_marks_per_player
+		_mode_label.text = "Infinite  -  %d marks each" % config.max_marks_per_player
 	else:
 		_mode_label.text = "Classic"
 	set_round(1, config.rounds_to_win)
@@ -56,7 +56,7 @@ func set_turn(player_index: int) -> void:
 
 
 func set_round(round_number: int, rounds_to_win: int) -> void:
-	_round_label.text = "Round %d  ·  first to %d" % [maxi(round_number, 1), rounds_to_win]
+	_round_label.text = "Round %d  -  first to %d" % [maxi(round_number, 1), rounds_to_win]
 
 
 func show_message(text: String, duration: float = 1.2) -> void:
