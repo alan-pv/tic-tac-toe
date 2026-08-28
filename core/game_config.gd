@@ -72,7 +72,8 @@ func clone() -> GameConfig:
 
 
 func _to_string() -> String:
-	var mode := "infinite(%d)" % max_marks_per_player if infinite_mode else "classic"
-	return "GameConfig(%s, %s, first to %d)" % [
-		"vs bot" if opponent == Opponent.BOT else "hotseat", mode, rounds_to_win
-	]
+	var mode := "classic"
+	if infinite_mode:
+		mode = "infinite(%d marks each)" % max_marks_per_player
+	var rival := "vs bot" if opponent == Opponent.BOT else "hotseat"
+	return "GameConfig(%s, %s, first to %d)" % [rival, mode, rounds_to_win]

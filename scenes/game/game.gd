@@ -107,7 +107,7 @@ func _run_match() -> void:
 		if not _running:
 			return
 
-		# The loser opens the next round, so nobody keeps the first-move edge.
+		# They take turns opening, so nobody keeps the first-move advantage.
 		starting_player = state.opponent_of(starting_player)
 
 	if not _running:

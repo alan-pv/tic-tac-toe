@@ -116,9 +116,12 @@ func _build_config() -> GameConfig:
 	var config := GameConfig.new()
 	var against_bot := _opponent_option.selected == 0
 
-	config.opponent = GameConfig.Opponent.BOT if against_bot else GameConfig.Opponent.HUMAN
-	config.player_names = PackedStringArray(["You", "Bot"]) if against_bot \
-		else PackedStringArray(["Player 1", "Player 2"])
+	if against_bot:
+		config.opponent = GameConfig.Opponent.BOT
+		config.player_names = PackedStringArray(["You", "Bot"])
+	else:
+		config.opponent = GameConfig.Opponent.HUMAN
+		config.player_names = PackedStringArray(["Player 1", "Player 2"])
 
 	config.infinite_mode = _infinite_toggle.button_pressed
 	config.max_marks_per_player = int(_marks_slider.value)

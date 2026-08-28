@@ -78,6 +78,10 @@ func _color_for_state() -> Color:
 ## board.gd: awaiting something that never pauses. The warning is correct, it is
 ## harmless, and it goes away by itself the moment there is a tween here.
 ##
+## Animate %Symbol, not the cell itself: ui_sounds.gd already bounces every
+## button on the screen, and two tweens pulling on the same scale property fight
+## each other in ways that look like a physics bug.
+##
 ## Godot you may not know yet:
 ##   create_tween()                       a tween owned by this node, dies with it
 ##   Tween.tween_property(obj, "property", final_value, seconds)
