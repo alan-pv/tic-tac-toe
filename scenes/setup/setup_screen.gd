@@ -8,11 +8,13 @@ extends Control
 
 ## The bot difficulties, as data. Drop another .tres in resources/difficulties/
 ## and add it here; no other file needs to change.
-const DIFFICULTY_PATHS: PackedStringArray = PackedStringArray([
+## A plain array literal, not PackedStringArray([...]): a const has to be a
+## constant expression, and calling a constructor is not one.
+const DIFFICULTY_PATHS := [
 	"res://resources/difficulties/casual.tres",
 	"res://resources/difficulties/sharp.tres",
 	"res://resources/difficulties/flawless.tres",
-])
+]
 
 @onready var _opponent_option: OptionButton = %OpponentOption
 @onready var _difficulty_row: Control = %DifficultyRow
@@ -61,7 +63,7 @@ func _intro_config() -> Dictionary:
 func _load_difficulties() -> void:
 	_difficulties.clear()
 	_difficulty_option.clear()
-	for path in DIFFICULTY_PATHS:
+	for path: String in DIFFICULTY_PATHS:
 		var preset := load(path) as DifficultyPreset
 		if preset == null:
 			push_error("Could not load the difficulty at %s" % path)

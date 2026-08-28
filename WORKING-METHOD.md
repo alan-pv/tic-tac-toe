@@ -1,8 +1,14 @@
 # Working method — Alan + Claude
 
 Portable document. Copy it to the root of the next project and hand it over at
-the start of the session. It summarises how **Memorandum** was built (a memory
-match game in Godot 4.7, August 2026) and what to adjust next time.
+the start of the session. It summarises how **Memorandum** (a memory match game,
+Godot 4.7, August 2026) and **Tic Tac Toe** (three in a row with an infinite
+mode, August 2026) were built, and what to adjust next time.
+
+**Keep it current.** Whenever a session settles a rule, finds a trap or proves a
+piece reusable, it goes in here before the session ends. This document is the
+only thing that travels between projects; a lesson that stays in a chat log is a
+lesson paid for twice.
 
 ---
 
@@ -39,10 +45,11 @@ DeckBuilder" message is a far better starting point than a wall of errors.
 
 ---
 
-## 2. CHANGE FOR NEXT TIME: pseudocode, not code
+## 2. Guidance: pseudocode, not code
 
 In Memorandum the guidance above each function mixed prose with almost
-copy-pasteable GDScript. **Too much code.** From now on:
+copy-pasteable GDScript. **Too much code.** Tic Tac Toe was written to the rule
+below and it holds up: keep it.
 
 ### The rule
 
@@ -139,10 +146,43 @@ does fit.** Do not force this one.
 
 ---
 
-## 4. The rhythm
+## 4. The portable base
 
-1. Claude asks only what is essential **before** writing anything (scope, who
-   you play against, what difficulty changes, language conventions).
+Four autoloads have now survived two projects without a line changing. They are
+the starting kit: copy them before anything else exists.
+
+| File | What it does | How portable |
+|---|---|---|
+| `autoloads/audio_manager.gd` | A pool of eight `AudioStreamPlayer`s, `play_sfx(path)` callable from anywhere, slight pitch variation, volume read from `GameSettings` | Verbatim. Only the `SFX_*` constants change |
+| `autoloads/scene_switcher.gd` | `go_to(path)` and `go_back()` with a fade to black, a history stack, and the wait until `current_scene` really exists | Verbatim. Only the scene path constants change |
+| `autoloads/ui_intro.gd` | Animates every screen into view; each scene tunes it with an optional `_intro_config()` on its root script | Verbatim |
+| `autoloads/ui_sounds.gd` | Hover and click sound plus a bounce on every `BaseButton` in the project, wired automatically through `node_added` | Verbatim |
+
+Travelling with them: `resources/themes/main_theme.tres` and the `.wav` files.
+The theme cannot load without its font, so the font comes too, or the
+`default_font` line has to go with it.
+
+**`GameSettings` is not portable.** It holds whatever this particular game needs
+to carry across a scene change. Rewrite it every time.
+
+The palette is decided before a single scene exists and lives only in the theme.
+Memorandum and Tic Tac Toe share it:
+
+```
+#121212  background          #1E1E1E  panels           #3A3A3A  buttons, cells
+#007F5F  accent and focus    #b2b2b278  secondary text, faded things
+```
+
+---
+
+## 5. The rhythm
+
+1. Claude asks only what is essential **before** writing anything. Four
+   questions was the right number for Tic Tac Toe: how far the scope reaches (a
+   fixed 3x3 or a configurable board), who you play against, which assets carry
+   over from the last project, and what the thing is called. Ask about anything
+   that would change the architecture; decide anything with an obvious default
+   without asking.
 2. Claude assembles the whole project: folders, scenes, services, scaffolding.
 3. Claude hands over an **ordered list of missions**, arranged so each step
    unlocks something visible. This worked very well: "after step 3 cards appear
@@ -168,7 +208,7 @@ This is what worked best; keep it:
 
 ---
 
-## 5. Fixed conventions
+## 6. Fixed conventions
 
 - **Everything in English**: code, comments, documentation and UI strings.
   (Memorandum started with Spanish comments and was converted at the end; skip
@@ -181,10 +221,13 @@ This is what worked best; keep it:
   project is the proof that the cycle works.
 - Run `git init` at the start. Memorandum had no repository and every bulk edit
   had to be backed up by hand.
+- **The repository is Alan's and only Alan's.** Commit as `APV-DevGame
+  <alanpomaresv@gmail.com>`, with no `Co-Authored-By` and no session trailer.
+  These are personal projects and the history should read like one.
 
 ---
 
-## 6. Godot traps that already cost time
+## 7. Godot traps that already cost time
 
 Worth flagging up front in the next project:
 
@@ -201,11 +244,22 @@ Worth flagging up front in the next project:
 | Emitting a signal before anyone `await`s it | The `await` hangs forever; use `call_deferred` |
 | A full-screen `ColorRect` eats every click | `MOUSE_FILTER_IGNORE` |
 | A `PopupMenu` overlays the controls beneath it | Selecting an item can land the mouse release on the button underneath |
+| `const X := PackedStringArray([...])` | *"Assigned value for constant isn't a constant expression"*. `Vector2()` and `Color()` are fine inside a `const`; the packed-array constructors are not. Use a plain `[...]` literal |
+| Awaiting a function that never pauses | REDUNDANT_AWAIT. Expected while the animations are still empty stubs, and it clears itself once there is a tween |
+| Two tweens pulling on the same property | `ui_sounds.gd` already bounces every button. An animation that also tweens that button's `scale` fights it; animate a child instead |
 
 ---
 
-## 7. Outstanding in Memorandum
+## 8. Outstanding
+
+**Memorandum**
 
 - `core/save_manager.gd` — deliberately left unimplemented. Records and
   preferences are not persisted; everything else works.
 - Customisation with Alan's own art, sound and animation.
+
+**Tic Tac Toe**
+
+- The nine missions in its `ARCHITECTURE.md`.
+- Nothing is persisted either: volumes, the last setup and the results all die
+  with the process.

@@ -8,7 +8,7 @@ extends RefCounted
 ##   - godot --headless --script res://tests/run_tests.gd
 
 
-const SUITES: Array[Script] = [
+const SUITES := [
 	preload("res://tests/test_mark.gd"),
 	preload("res://tests/test_board_state.gd"),
 	preload("res://tests/test_game_rules.gd"),
@@ -24,7 +24,7 @@ static func run_all() -> bool:
 	print("")
 	print("---------------- tests ----------------")
 
-	for suite_script in SUITES:
+	for suite_script: Script in SUITES:
 		var suite: MiniTest = suite_script.new()
 		var suite_name: String = suite_script.resource_path.get_file().get_basename()
 		var failures := suite.run()
