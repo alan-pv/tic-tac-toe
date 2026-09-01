@@ -1,6 +1,6 @@
 extends MiniTest
 
-## Missions 5 and 6.
+## The rulebook: the eight lines, and what ends a round.
 ##
 ## These write straight into board.cells instead of calling place(), so a bug in
 ## BoardState cannot make the rulebook look broken.
@@ -29,7 +29,7 @@ const _X := Mark.Value.X
 const _O := Mark.Value.O
 
 
-# ---------------------------------------------------------------- mission 5
+# ---------------------------------------------------------------- the lines
 
 
 func test_there_are_eight_ways_to_win() -> void:
@@ -84,7 +84,7 @@ func test_a_line_shared_between_players_wins_nothing() -> void:
 	is_true(GameRules.winning_line(board, _O).is_empty(), "neither does O")
 
 
-# ---------------------------------------------------------------- mission 6
+# ---------------------------------------------------------------- outcomes
 
 
 func test_a_full_board_with_no_line_is_a_draw() -> void:

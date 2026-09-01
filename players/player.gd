@@ -3,11 +3,10 @@ extends Node
 
 ## Common contract for anyone who can take a turn.
 ##
-##     game.gd asks:   request_pick(state)
+##     game.gd asks:       request_pick(state)
 ##     the player answers: picked(index)
 ##
-## That is the whole conversation. game.gd never finds out whether it is talking
-## to a person or to the machine, which is why there is not one `if is_bot:`
+## That is the whole conversation, which is why there is not one `if is_bot:`
 ## anywhere in this project.
 
 
@@ -35,7 +34,12 @@ func request_pick(_state: GameState) -> void:
 	push_error("%s does not implement request_pick()" % get_class())
 
 
+## Every click on the board reaches every player. Most of them ignore it.
+func on_cell_clicked(_index: int) -> void:
+	pass
+
+
 ## The turn was abandoned: the match was restarted, or the scene is going away.
-## Whatever you were waiting for, stop waiting, and do NOT emit picked.
+## Stop waiting, and do not emit picked.
 func cancel_pick() -> void:
 	pass

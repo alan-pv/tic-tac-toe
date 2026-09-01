@@ -1,14 +1,14 @@
 extends Node
 
 ## Switches screens with a fade to black.
-##
-## Reused unchanged from Memorandum; only the scene paths differ.
 
 
 const MAIN_MENU := "res://scenes/main_menu/main_menu.tscn"
 const SETUP := "res://scenes/setup/setup_screen.tscn"
 const GAME := "res://scenes/game/game.tscn"
 const RESULTS := "res://scenes/results/results_screen.tscn"
+const ONLINE_MENU := "res://scenes/online_menu/online_menu.tscn"
+const ROOM_LOBBY := "res://scenes/room_lobby/room_lobby.tscn"
 
 const FADE_TIME := 0.22
 

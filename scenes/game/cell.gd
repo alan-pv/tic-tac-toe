@@ -1,17 +1,23 @@
 class_name Cell
 extends Button
 
-## One square of the board.
-##
-## It owns nothing and decides nothing: it is told what to show. The mark drawn
+## One square of the board. It owns nothing and decides nothing: the mark drawn
 ## here is a copy of what BoardState holds, never a second source of truth.
+##
+## Everything is animated on %Symbol rather than on the cell itself, because
+## ui_sounds.gd already bounces every button on the screen and two tweens
+## pulling on the same scale fight each other.
 
 
 signal clicked(index: int)
 
-const COLOR_X := Color(0, 0.49803922, 0.37254903, 1)                   ## #007F5F
-const COLOR_O := Color(0.909804, 0.929412, 0.952941, 1)                ## near white
-const COLOR_GHOST := Color(0.69803923, 0.69803923, 0.69803923, 0.47058824)  ## #b2b2b278
+const COLOR_X := Color(0, 0.49803922, 0.37254903, 1)
+const COLOR_O := Color(0.909804, 0.929412, 0.952941, 1)
+const COLOR_GHOST := Color(0.69803923, 0.69803923, 0.69803923, 0.47058824)
+
+const PLACE_TIME := 0.22
+const VANISH_TIME := 0.28
+const WIN_TIME := 0.18
 
 @onready var _symbol: Label = %Symbol
 
@@ -21,6 +27,8 @@ var mark: int = Mark.Value.NONE
 
 ## True while this mark is the next one to disappear in infinite mode.
 var is_ghost: bool = false
+
+var _anim: Tween
 
 
 func _ready() -> void:
@@ -49,6 +57,48 @@ func set_interactive(value: bool) -> void:
 	disabled = not value
 
 
+## The mark landing. Awaited by the board, so it delays the rest of the turn.
+func play_place() -> void:
+	if _symbol == null:
+		return
+	_start_anim()
+	_symbol.scale = Vector2.ZERO
+	_symbol.rotation_degrees = -25.0
+	_anim.set_parallel(true)
+	_anim.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_anim.tween_property(_symbol, "scale", Vector2.ONE, PLACE_TIME)
+	_anim.tween_property(_symbol, "rotation_degrees", 0.0, PLACE_TIME)
+	await _anim.finished
+
+
+## The mark being pushed off the board in infinite mode. The board empties the
+## cell as soon as this returns, so the disappearance has to be readable: it is
+## the whole point of the mode and the player has to see whose mark went.
+func play_vanish() -> void:
+	if _symbol == null:
+		return
+	_start_anim()
+	_anim.set_parallel(true)
+	_anim.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	_anim.tween_property(_symbol, "scale", Vector2.ZERO, VANISH_TIME)
+	_anim.tween_property(_symbol, "rotation_degrees", 35.0, VANISH_TIME)
+	_anim.tween_property(_symbol, "modulate:a", 0.0, VANISH_TIME)
+	await _anim.finished
+	_reset_symbol()
+
+
+## This cell is part of the line that just won the round. Called on all three at
+## once; only the last one is awaited.
+func play_win() -> void:
+	if _symbol == null:
+		return
+	_start_anim()
+	_anim.set_trans(Tween.TRANS_SINE)
+	_anim.tween_property(_symbol, "scale", Vector2(1.35, 1.35), WIN_TIME)
+	_anim.tween_property(_symbol, "scale", Vector2.ONE, WIN_TIME)
+	await _anim.finished
+
+
 func _refresh() -> void:
 	# @onready vars do not exist until the node is inside the tree, and setup()
 	# may well arrive first. Bail out quietly instead of crashing on Nil.
@@ -64,49 +114,17 @@ func _color_for_state() -> Color:
 	return COLOR_X if mark == Mark.Value.X else COLOR_O
 
 
-# ---------------------------------------------------------------- your work
+## One tween at a time, around the middle of the symbol. Left at zero the pivot
+## would grow the mark out of its own top left corner.
+func _start_anim() -> void:
+	if _anim != null and _anim.is_valid():
+		_anim.kill()
+	_reset_symbol()
+	_symbol.pivot_offset = _symbol.size * 0.5
+	_anim = create_tween()
 
 
-## The mark landing. Called right after set_mark(), and awaited by the board, so
-## whatever happens here delays the rest of the turn.
-##
-##   the symbol is already on screen and already the right colour
-##   make it arrive: grow it out of nothing, drop it in, spin it a quarter turn
-##   wait for your own animation before returning, or nobody else will wait either
-##
-## Until you write this, the editor will warn REDUNDANT_AWAIT on the call in
-## board.gd: awaiting something that never pauses. The warning is correct, it is
-## harmless, and it goes away by itself the moment there is a tween here.
-##
-## Animate %Symbol, not the cell itself: ui_sounds.gd already bounces every
-## button on the screen, and two tweens pulling on the same scale property fight
-## each other in ways that look like a physics bug.
-##
-## Godot you may not know yet:
-##   create_tween()                       a tween owned by this node, dies with it
-##   Tween.tween_property(obj, "property", final_value, seconds)
-##   Tween.set_trans(Tween.TRANS_BACK)    the overshoot that makes things pop
-##   Tween.set_ease(Tween.EASE_OUT)
-##   Tween.set_parallel(true)             everything after this runs at once
-##   await tween.finished
-##   Control.pivot_offset                 scaling and rotation happen around this
-##                                        point. Leave it at zero and the mark
-##                                        grows out of its top-left corner
-func play_place() -> void:
-	# TODO(you)
-	pass
-
-
-## The mark being pushed off the board in infinite mode. The board empties the
-## cell as soon as this returns, so make the disappearance readable: this is the
-## whole point of the mode and the player has to see whose mark went and why.
-func play_vanish() -> void:
-	# TODO(you)
-	pass
-
-
-## This cell is part of the line that just won the round. Called on all three at
-## once; only the last one is awaited.
-func play_win() -> void:
-	# TODO(you)
-	pass
+func _reset_symbol() -> void:
+	_symbol.scale = Vector2.ONE
+	_symbol.rotation_degrees = 0.0
+	_symbol.modulate.a = 1.0

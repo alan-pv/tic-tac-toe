@@ -2,10 +2,6 @@ extends Control
 
 ## Match coordinator: builds everything, wires it together, and drives the loop.
 ##
-## This is the one file that knows every other one. Nobody else knows more than
-## its immediate neighbours, so when something misbehaves it is either inside an
-## isolated piece or in the wiring right here.
-##
 ## The shape of a turn, end to end:
 ##
 ##   game.gd asks the player for a cell   -> player.request_pick(state)
@@ -13,6 +9,9 @@ extends Control
 ##   the rules are applied                -> state.play(index) -> MoveResult
 ##   the result is animated               -> await board.place() / board.vanish()
 ##   the round ends, or the turn passes
+##
+## Online it is the identical loop: a NetPlayer answers picked() with a cell the
+## referee confirmed instead of one it chose, and nothing else changes.
 
 
 const ROUND_GUARD := 99
@@ -25,6 +24,10 @@ const MOVE_GUARD := BoardState.CELL_COUNT * 6
 var config: GameConfig
 var state: GameState
 var players: Array[Player] = []
+
+## Only exists in an online match. When it is null this file behaves exactly as
+## it did before the network existed.
+var online: OnlineMatch = null
 
 var elapsed_seconds: float = 0.0
 
@@ -41,47 +44,64 @@ func _ready() -> void:
 	state = GameState.new()
 	state.setup(config)
 
+	if config.online:
+		_create_online()
+
 	_create_players()
 	_connect_signals()
+
+	if online != null:
+		online.bind_state(state, players)
 
 	hud.setup(config)
 	board.build()
 	board.set_interactive(false)
 
-	var missing := _unimplemented_pieces()
-	if not missing.is_empty():
-		hud.show_message("Nothing to play yet.\nImplement %s" % missing[0], 0.0)
-		return
-
 	_run_match()
+
+
+## Sets the network side up before the seats exist, so they can ask it who they
+## belong to. The room it reads was left there by the lobby.
+func _create_online() -> void:
+	online = OnlineMatch.new()
+	online.name = "OnlineMatch"
+	add_child(online)
+	online.prepare(config)
+	online.message.connect(_on_online_message)
+	online.aborted.connect(_on_online_aborted)
+	pause_menu.set_online(true)
+	# Folded away to start with: the board is what the screen is for, and the
+	# dot on the bar is enough to say something was said.
+	RoomChat.spawn(self, false)
 
 
 func _create_players() -> void:
 	players.clear()
 
-	var first := HumanPlayer.new()
-	first.name = "Player1"
-	first.setup(0, config.player_names[0], state.mark_for_player(0), config)
-	add_child(first)
-	players.append(first)
+	for i in GameConfig.PLAYER_COUNT:
+		var player := _player_for_seat(i)
+		player.name = "Seat%d" % i
+		player.setup(i, config.player_names[i], state.mark_for_player(i), config)
+		add_child(player)
+		if player is NetPlayer:
+			(player as NetPlayer).attach(online, online.owns_seat(i), online.referees_seat(i))
+		players.append(player)
 
-	var second: Player
-	if config.opponent == GameConfig.Opponent.BOT:
-		second = BotPlayer.new()
-		second.name = "Bot"
-		(second as BotPlayer).played_at_random.connect(_on_bot_played_at_random)
-	else:
-		second = HumanPlayer.new()
-		second.name = "Player2"
-	second.setup(1, config.player_names[1], state.mark_for_player(1), config)
-	add_child(second)
-	players.append(second)
+
+## Online, both seats are a NetPlayer on both clients: yours and theirs alike.
+## They wait for the same confirms, so every client runs the identical loop.
+func _player_for_seat(index: int) -> Player:
+	if config.online:
+		return NetPlayer.new()
+	if index == 1 and config.opponent == GameConfig.Opponent.BOT:
+		return BotPlayer.new()
+	return HumanPlayer.new()
 
 
 func _connect_signals() -> void:
 	board.cell_clicked.connect(_on_board_cell_clicked)
 	state.score_changed.connect(hud.set_score)
-	state.turn_changed.connect(_on_turn_changed)
+	state.turn_changed.connect(hud.set_turn)
 	hud.pause_pressed.connect(_open_pause)
 	pause_menu.resume_requested.connect(_close_pause)
 	pause_menu.restart_requested.connect(_restart)
@@ -93,6 +113,14 @@ func _connect_signals() -> void:
 
 func _run_match() -> void:
 	_running = true
+
+	if online != null:
+		hud.show_message("Waiting for everyone...", 0.0)
+		await online.wait_for_everyone()
+		if not _running:
+			return
+		hud.show_message("", 0.0)
+
 	var starting_player := 0
 	var rounds := 0
 
@@ -136,7 +164,7 @@ func _play_round() -> void:
 
 		var result := state.play(index)
 		if not result.is_valid():
-			hud.show_message("GameState.play() refused cell %d." % index, 0.0)
+			push_error("GameState.play() refused cell %d." % index)
 			return
 
 		await board.place(result.index, result.mark)
@@ -144,6 +172,10 @@ func _play_round() -> void:
 			await board.vanish(result.vanished_index)
 		if not _running:
 			return
+
+		# The move is on every board now, so the next one can be asked for.
+		if online != null:
+			online.end_turn()
 
 		if result.is_win():
 			await _win_round(result)
@@ -176,6 +208,8 @@ func _draw_round() -> void:
 func _finish_match() -> void:
 	_running = false
 	board.set_interactive(false)
+	if online != null:
+		online.finish()
 
 	GameSettings.last_result = {
 		"scores": state.scores.duplicate(),
@@ -201,18 +235,25 @@ func _refresh_ghost() -> void:
 
 
 func _on_board_cell_clicked(index: int) -> void:
-	# Every human hears every click; only the one waiting for a pick answers.
+	# Every player hears every click; only the one waiting for a move answers.
 	for player in players:
-		if player is HumanPlayer:
-			(player as HumanPlayer).on_cell_clicked(index)
+		player.on_cell_clicked(index)
 
 
-func _on_turn_changed(player_index: int) -> void:
-	hud.set_turn(player_index)
+func _on_online_message(text: String) -> void:
+	hud.show_message(text, 2.0)
 
 
-func _on_bot_played_at_random() -> void:
-	hud.show_message("The bot is guessing.\nImplement BotPlayer.choose_move()", 2.5)
+## The referee left, or the connection died. There is no rules engine any more,
+## so the match stops here instead of drifting out of sync in silence.
+func _on_online_aborted(reason: String) -> void:
+	if not _running:
+		return
+	_stop()
+	board.set_interactive(false)
+	hud.show_message(reason, 0.0)
+	await get_tree().create_timer(2.5).timeout
+	SceneSwitcher.go_to(SceneSwitcher.MAIN_MENU, false)
 
 
 func _process(delta: float) -> void:
@@ -247,6 +288,8 @@ func _restart() -> void:
 func _quit_to_menu() -> void:
 	_stop()
 	pause_menu.close()
+	if online != null:
+		Rooms.leave()
 	SceneSwitcher.go_to(SceneSwitcher.MAIN_MENU, false)
 
 
@@ -254,42 +297,3 @@ func _stop() -> void:
 	_running = false
 	for player in players:
 		player.cancel_pick()
-
-
-# ---------------------------------------------------------------- scaffolding
-
-
-## Pokes the core with harmless questions to work out what is still a stub, so
-## the first run says what to write instead of hanging on a board that ignores
-## every click. Delete this function once the missions are done.
-func _unimplemented_pieces() -> Array[String]:
-	var missing: Array[String] = []
-
-	if Mark.opponent(Mark.Value.X) != Mark.Value.O:
-		missing.append("Mark.opponent()")
-
-	var probe := BoardState.new(0)
-	if probe.free_indices().size() != BoardState.CELL_COUNT:
-		missing.append("BoardState.free_indices()")
-	elif probe.place(0, Mark.Value.X) != -1 or probe.mark_at(0) != Mark.Value.X:
-		missing.append("BoardState.place() / BoardState.mark_at()")
-
-	var scratch := GameState.new()
-	scratch.setup(config)
-	if not scratch.can_play(0):
-		missing.append("GameState.can_play()")
-	elif not scratch.play(0).is_valid():
-		missing.append("GameState.play()")
-
-	scratch.start_round(1)
-	if scratch.round_number < 1 or scratch.current_player != 1 or not scratch.board.is_free(0):
-		missing.append("GameState.start_round()")
-
-	if GameRules.all_lines().size() != 8:
-		missing.append("GameRules.all_lines()")
-
-	scratch.scores[0] = config.rounds_to_win
-	if not scratch.is_match_over():
-		missing.append("GameState.is_match_over()")
-
-	return missing

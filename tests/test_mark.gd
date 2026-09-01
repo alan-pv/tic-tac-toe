@@ -1,6 +1,6 @@
 extends MiniTest
 
-## Mission 1.
+## The three things a cell can hold.
 
 
 func test_opponent_swaps_the_two_marks() -> void:

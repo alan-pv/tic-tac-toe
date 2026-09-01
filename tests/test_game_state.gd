@@ -1,6 +1,6 @@
 extends MiniTest
 
-## Missions 4 and 6.
+## The match: legal moves, scoring and when it ends.
 ##
 ## This suite leans on BoardState and GameRules, so it is the last one to go
 ## green. If it fails while the other three pass, the bug is here.
@@ -20,7 +20,7 @@ func _fresh(rounds_to_win: int = 3, infinite: bool = false) -> GameState:
 	return state
 
 
-# ---------------------------------------------------------------- mission 4
+# ---------------------------------------------------------------- playing
 
 
 func test_a_new_match_starts_level() -> void:
@@ -83,7 +83,7 @@ func test_a_new_round_clears_the_board_but_not_the_score() -> void:
 	eq(state.scores, [1, 0], "the match score survives the round")
 
 
-# ---------------------------------------------------------------- mission 6
+# ---------------------------------------------------------------- rounds
 
 
 func test_the_match_ends_when_somebody_reaches_the_target() -> void:

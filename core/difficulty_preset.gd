@@ -1,11 +1,8 @@
 class_name DifficultyPreset
 extends Resource
 
-## A bot difficulty as an editable resource (.tres).
-##
-## Balancing the bot should never mean editing code: the three presets in
-## resources/difficulties/ are data, and the setup screen just lists whatever
-## files it finds there.
+## A bot difficulty as an editable resource, so balancing is data and not code.
+## The setup screen lists whatever it finds in resources/difficulties/.
 
 
 @export var id: StringName = &"sharp"
@@ -17,7 +14,7 @@ extends Resource
 ## Seconds the bot waits before playing, so its move is readable.
 @export_range(0.0, 2.0, 0.05) var bot_think_time: float = 0.45
 
-## 0.0 = random, 1.0 = perfect. BotPlayer decides what to do with it.
+## 0.0 = random, 1.0 = perfect.
 @export_range(0.0, 1.0, 0.05) var bot_skill: float = 0.8
 
 

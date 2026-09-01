@@ -3,10 +3,7 @@ extends RefCounted
 
 ## The 3x3 grid, plus the order in which each player placed their marks.
 ##
-## Pure data: no signals, no nodes, nothing to await. The bot will clone this
-## object many times per turn while it looks ahead, so it stays cheap on purpose.
-##
-## Cells are numbered left to right, top to bottom:
+## Pure data, and cheap on purpose: the bot clones it many times per turn.
 ##
 ##     0 | 1 | 2
 ##    ---+---+---
@@ -21,13 +18,10 @@ const CELL_COUNT := 9
 ## One Mark.Value per cell, CELL_COUNT of them.
 var cells: Array[int] = []
 
-## 0 means classic rules: marks stay on the board forever.
-## Anything else is the infinite mode limit for each player.
+## 0 means classic rules: marks stay on the board forever. Anything else is the
+## infinite mode limit for each player.
 var max_marks_per_player: int = 0
 
-## The cells each mark occupies, oldest placement first. Two plain arrays and
-## not one Dictionary keyed by mark: a Dictionary stores Variant and would hand
-## these back as untyped Arrays, which is one of the traps in WORKING-METHOD.md.
 var _order_x: Array[int] = []
 var _order_o: Array[int] = []
 
@@ -45,11 +39,8 @@ func reset() -> void:
 	_order_o.clear()
 
 
-## The list of cells a mark occupies, oldest first.
-##
-## This hands back the REAL array, not a copy: appending to what you get here
-## appends to the board. That is deliberate, place() needs it. Call
-## Array.duplicate() yourself if you want a snapshot that will not move.
+## The cells a mark occupies, oldest first. This is the live array, not a copy:
+## place() appends to it. Duplicate it yourself for a snapshot.
 func order_for(mark: int) -> Array[int]:
 	return _order_x if mark == Mark.Value.X else _order_o
 
@@ -70,120 +61,59 @@ static func column_of(index: int) -> int:
 	return index % SIZE
 
 
-# ---------------------------------------------------------------- your work
-
-
-## What is sitting in a cell.
-##
-## WHAT IT SHOULD DO:
-##   if the index is outside the board: answer NONE
-##   otherwise: answer whatever `cells` holds there
-##
-## Never let this crash. The bot explores the board by asking about indices it
-## computed, and an out-of-range read here would take the whole match down
-## instead of just pruning a branch.
+## What is sitting in a cell. Never crashes: the bot reads indices it computed.
 func mark_at(index: int) -> int:
-	if index in range(9):
-		return cells[index]
-	return Mark.Value.NONE
+	return cells[index] if is_inside(index) else Mark.Value.NONE
 
 
-## True when a mark can still be placed in that cell.
-##
-##   the cell has to be inside the board, and it has to hold NONE
 func is_free(index: int) -> bool:
-	return (index in range(9)) and (cells[index] == Mark.Value.NONE)
+	return is_inside(index) and cells[index] == Mark.Value.NONE
 
 
-## Every cell that can still be played, in board order.
-##
-##   walk every cell, first to last
-##   keep the ones that are free
-##
-## Mind the loop bounds: `for i in CELL_COUNT` walks 0..8, which is what you
-## want here, while `range(1, CELL_COUNT)` would quietly skip the top-left
-## corner and the bot would never play there.
 func free_indices() -> Array[int]:
-	var _free: Array[int] = []
+	var free: Array[int] = []
 	for i in CELL_COUNT:
 		if is_free(i):
-			_free.append(i)
-	return _free
+			free.append(i)
+	return free
 
 
-## Puts a mark on the board.
-## Answers the cell that had to be emptied to make room, or -1 if none was.
+## Puts a mark on the board and answers the cell that had to be emptied to make
+## room, or -1 if none was.
 ##
-## WHAT IT SHOULD DO:
-##   if the cell is not free: warn and answer -1, changing nothing
-##
-##   get the placement order of that mark (order_for gives you the live array,
-##   so appending to it really does update the board)
-##
-##   if there is a limit and this player has already reached it:
-##       their oldest mark is the one that has been in that list the longest
-##       drop it from the list, empty its cell, and remember which cell it was
-##
-##   write the mark into the cell, and append the cell to the end of the list
-##   answer the emptied cell, or -1 if nothing was emptied
-##
-## The trap: evict BEFORE placing. If you place first and evict afterwards, a
-## player sitting at the limit evicts the mark they just played, and a piece
-## vanishes from the board with no explanation. This is the single most likely
-## bug in the whole project, and tests/test_board_state.gd aims straight at it.
-##
-## Godot you may not know yet:
-##   Array.pop_front()    removes and returns the FIRST element
-##   Array.pop_back()     removes and returns the LAST element
-##   Array.is_empty()     true when it has no elements
-##   push_warning(text)   yellow message in Output, does NOT stop execution
+## The eviction happens before the placement: the other way round, a player
+## sitting at the limit would evict the mark they just played.
 func place(index: int, mark: int) -> int:
 	if not is_free(index):
-		push_warning("Ocupied")
+		push_warning("BoardState: cell %d is not free." % index)
 		return -1
-	
-	var order_mark: Array[int] = order_for(mark)
-	var vanish := -1 
-	
-	if max_marks_per_player != 0 and order_mark.size() >= max_marks_per_player:
-		vanish = order_mark.pop_front() 
-		cells[vanish] = Mark.Value.NONE
-	
+
+	var order := order_for(mark)
+	var vanished := -1
+
+	if max_marks_per_player != 0 and order.size() >= max_marks_per_player:
+		vanished = order.pop_front()
+		cells[vanished] = Mark.Value.NONE
+
 	cells[index] = mark
-	order_mark.append(index)
-	
-	return vanish
+	order.append(index)
+	return vanished
 
 
-## Which cell of that player will be emptied by their NEXT move, or -1 if their
-## next move will not empty anything. The board fades that mark as a warning,
-## so it must not change the board in any way.
-##
-##   with no limit, nothing ever vanishes
-##   if the player is still below the limit, nothing vanishes yet either
-##   otherwise it is their oldest mark
+## Which cell of that player their NEXT move will empty, or -1. The board fades
+## that mark as a warning, so this must not change anything.
 func next_to_vanish(mark: int) -> int:
-	var order_mark: Array[int] = order_for(mark)
-	if max_marks_per_player != 0 and order_mark.size() >= max_marks_per_player:
-		return order_mark[0]
+	var order := order_for(mark)
+	if max_marks_per_player != 0 and order.size() >= max_marks_per_player:
+		return order[0]
 	return -1
 
 
-## True when there is nowhere left to play.
-##
-##   the board is full when not a single cell is free
-##
-## In infinite mode this should never become true: that is exactly why
-## GameConfig refuses limits that would let both players fill the board.
 func is_full() -> bool:
 	return free_indices().is_empty()
 
 
-# ---------------------------------------------------------------- plumbing
-
-
-## An independent copy. The bot needs this to try a move without touching the
-## real board: clone, place, look at the result, throw the clone away.
+## An independent copy, for the bot to try a move on.
 func clone() -> BoardState:
 	var copy := BoardState.new(max_marks_per_player)
 	copy.cells = cells.duplicate()
@@ -192,7 +122,6 @@ func clone() -> BoardState:
 	return copy
 
 
-## Prints the board as three lines of text. Invaluable when a test fails.
 func _to_string() -> String:
 	var lines: PackedStringArray = PackedStringArray()
 	for row in SIZE:

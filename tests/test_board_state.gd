@@ -1,6 +1,6 @@
 extends MiniTest
 
-## Missions 2, 3 and 7.
+## The grid: reading it, placing on it, and the infinite mode eviction.
 
 
 func _classic() -> BoardState:
@@ -11,7 +11,7 @@ func _infinite(limit: int = 3) -> BoardState:
 	return BoardState.new(limit)
 
 
-# ---------------------------------------------------------------- mission 2
+# ---------------------------------------------------------------- reading
 
 
 func test_a_new_board_is_empty() -> void:
@@ -38,7 +38,7 @@ func test_a_full_board_knows_it() -> void:
 	eq(board.free_indices().size(), 0, "free cells on a full board")
 
 
-# ---------------------------------------------------------------- mission 3
+# ---------------------------------------------------------------- placing
 
 
 func test_placing_a_mark_puts_it_where_it_was_asked() -> void:
@@ -63,7 +63,7 @@ func test_the_classic_game_never_removes_anything() -> void:
 	eq(board.order_for(Mark.Value.X).size(), 4, "four X on the board")
 
 
-# ---------------------------------------------------------------- mission 7
+# ---------------------------------------------------------------- infinite mode
 
 
 func test_the_fourth_mark_pushes_the_first_one_off() -> void:
@@ -109,7 +109,6 @@ func test_the_warning_points_at_the_oldest_mark() -> void:
 	eq(board.next_to_vanish(Mark.Value.X), -1, "still below the limit")
 	board.place(2, Mark.Value.X)
 	
-	print(board.order_for(Mark.Value.X))
 	eq(board.next_to_vanish(Mark.Value.X), 0, "the oldest X is the one at risk")
 
 

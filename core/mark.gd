@@ -1,11 +1,7 @@
 class_name Mark
 extends RefCounted
 
-## The three things a cell can hold.
-##
-## Everything in the core moves marks around as plain ints taken from
-## Mark.Value. There is no Mark instance anywhere: this class exists only to
-## give those ints a name and two helpers.
+## The three things a cell can hold, as plain ints with a name.
 
 
 enum Value {
@@ -15,16 +11,7 @@ enum Value {
 }
 
 
-## Gives back the rival of a mark.
-##
-## WHAT IT SHOULD DO:
-##   if the mark is X, answer O
-##   if the mark is O, answer X
-##   anything else has no rival: answer NONE
-##
-## This is the only place in the whole project that knows the two marks take
-## turns. Get it wrong and the turn order breaks everywhere at once, which will
-## look like a bug in game.gd instead of a bug here. tests/test_mark.gd covers it.
+## The rival of a mark, or NONE for anything that has no rival.
 static func opponent(mark: int) -> int:
 	if mark == Value.X:
 		return Value.O
@@ -33,7 +20,7 @@ static func opponent(mark: int) -> int:
 	return Value.NONE
 
 
-## The text a cell shows for a mark. Presentation only, already done.
+## The text a cell shows for a mark.
 static func to_symbol(mark: int) -> String:
 	match mark:
 		Value.X:

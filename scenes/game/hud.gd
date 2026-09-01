@@ -1,8 +1,8 @@
 class_name HUD
 extends Control
 
-## Scoreboard, round counter, turn indicator and the message that flashes in the
-## middle of the screen.
+## Scoreboard, round counter, turn indicator and the message that flashes in
+## the middle of the screen.
 
 
 signal pause_pressed
@@ -16,7 +16,6 @@ const SCORE_ENTRY_SCENE := preload("res://scenes/game/player_score_entry.tscn")
 @onready var _pause_button: Button = %PauseButton
 
 var _entries: Array[PlayerScoreEntry] = []
-var _config: GameConfig
 
 
 func _ready() -> void:
@@ -25,7 +24,6 @@ func _ready() -> void:
 
 
 func setup(config: GameConfig) -> void:
-	_config = config
 	for entry in _entries:
 		entry.queue_free()
 	_entries.clear()

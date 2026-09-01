@@ -1,11 +1,8 @@
 class_name HumanPlayer
 extends Player
 
-## A person: waits for a legal click on the board.
-##
-## Nothing to implement here. It only turns "a cell was clicked" into "this is
-## my move", and ignores clicks that arrive when it is not this player's turn or
-## that land on a cell the rules refuse.
+## A person: waits for a legal click on the board. Clicks that arrive out of
+## turn, or on a cell the rules refuse, are ignored.
 
 
 var _waiting: bool = false
@@ -17,8 +14,6 @@ func request_pick(state: GameState) -> void:
 	_waiting = true
 
 
-## game.gd routes every board click to every human. Only the one that is
-## currently waiting answers.
 func on_cell_clicked(index: int) -> void:
 	if not _waiting:
 		return

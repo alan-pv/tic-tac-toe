@@ -2,10 +2,7 @@ class_name Board
 extends AspectRatioContainer
 
 ## The board on screen: nine cells, and the translation from cell numbers into
-## things you can watch.
-##
-## It knows nothing about turns, rules or scores. game.gd tells it what to show
-## and awaits it.
+## things you can watch. It knows nothing about turns, rules or scores.
 
 
 signal cell_clicked(index: int)
@@ -61,8 +58,7 @@ func set_interactive(value: bool) -> void:
 		cell.set_interactive(value)
 
 
-## Shows a mark landing in a cell. Awaited: the turn does not go on until the
-## animation is done.
+## Shows a mark landing. Awaited: the turn does not go on until it is done.
 func place(index: int, mark: int) -> void:
 	var cell := get_cell(index)
 	if cell == null:
@@ -100,8 +96,7 @@ func highlight(line: PackedInt32Array) -> void:
 			cell.play_win()
 
 
-## Fades the mark that the current player is about to lose. Pass -1 for none.
-## Only one cell is ever ghosted at a time.
+## Fades the mark the current player is about to lose. Pass -1 for none.
 func show_ghost(index: int) -> void:
 	if _ghost_index == index:
 		return

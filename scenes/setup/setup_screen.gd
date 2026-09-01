@@ -1,15 +1,10 @@
 extends Control
 
 ## Builds the GameConfig for the next match and parks it in GameSettings.
-##
-## Nothing is passed between scenes as an argument: this screen writes the
-## configuration, game.gd reads it.
 
 
 ## The bot difficulties, as data. Drop another .tres in resources/difficulties/
 ## and add it here; no other file needs to change.
-## A plain array literal, not PackedStringArray([...]): a const has to be a
-## constant expression, and calling a constructor is not one.
 const DIFFICULTY_PATHS := [
 	"res://resources/difficulties/casual.tres",
 	"res://resources/difficulties/sharp.tres",
@@ -54,8 +49,8 @@ func _ready() -> void:
 	_start_button.grab_focus()
 
 
-## The whole panel arrives as one piece instead of every widget popping in on
-## its own: a form full of independently bouncing rows reads as noise.
+## The whole panel arrives as one piece: a form full of independently bouncing
+## rows reads as noise.
 func _intro_config() -> Dictionary:
 	return {"labels": false, "buttons": false, "panels": true}
 
@@ -86,13 +81,9 @@ func _selected_difficulty() -> DifficultyPreset:
 	return _difficulties[index]
 
 
-## Keeps the screen honest with itself: hides what does not apply and refuses to
-## start on a configuration the core would reject.
-##
-## Careful, and this bites everyone once: setting visible = false takes a node
-## out of the container's layout entirely, so everything below it slides up.
-## That is what we want here, but it is also why the rows are wrapped in their
-## own containers instead of being hidden control by control.
+## Hides what does not apply and refuses to start on a configuration the core
+## would reject. The rows are wrapped in their own containers because hiding a
+## node takes it out of the layout, which is what makes the panel close up.
 func _refresh() -> void:
 	var against_bot := _opponent_option.selected == 0
 	_difficulty_row.visible = against_bot

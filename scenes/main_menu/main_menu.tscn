@@ -55,11 +55,23 @@ custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 text = "Play"
 
+[node name="OnlineButton" type="Button" parent="Center/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+text = "Play online"
+
 [node name="HowToButton" type="Button" parent="Center/VBox/Buttons" unique_id=711919866]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 text = "How to play"
+
+[node name="AudioButton" type="Button" parent="Center/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+text = "Audio"
 
 [node name="QuitButton" type="Button" parent="Center/VBox/Buttons" unique_id=96523343]
 unique_name_in_owner = true
