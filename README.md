@@ -1,33 +1,88 @@
 # Tic Tac Toe
 
-Three in a row, and an infinite mode where it never ends.
+Three in a row, and an infinite mode where it never ends. Built with
+**Godot 4.7** (GDScript).
 
-Godot 4.7. Turn **infinite mode** on and each player may only keep three marks
-on the board: the fourth one you place pushes your oldest one off. The board
-never fills up, nothing you build is ever safe, and no round can end in a draw.
-The mark about to disappear is drawn faded, so you can see it coming.
+Turn **infinite mode** on and each player may only keep a few marks on the
+board: the next one you place pushes your oldest one off. The board never fills
+up, nothing you build is ever safe, and no round can end in a draw. The mark
+about to disappear is drawn faded, so you can see it coming.
 
-- One human against the bot, or two people on the same device.
-- Matches are played to a number of rounds, and the loser opens the next one.
-- Three bot difficulties, kept as editable `.tres` files.
+## What it does
+
+- **Classic or infinite**, two to four marks each, and a match is played to a
+  number of rounds with the players taking turns opening.
+- **Against the bot**, which is a depth-limited minimax with alpha-beta
+  pruning: at full skill it never loses. Three difficulties, kept as editable
+  `.tres` resources, so balancing it is not programming.
+- **Two people on the same device**, taking turns.
+- **Two people online**, in a browser or on the desktop: browse rooms, create
+  one with an optional password, agree on the settings and play. The chat sits
+  in the corner of the room, of the match and of the results. If your opponent
+  walks off mid-match a bot takes their seat and the game carries on.
+- Sound effects and **background music**, with a volume slider per audio bus,
+  remembered between runs; a staggered UI intro and a shared theme.
 
 ## Running it
 
-Open the project in Godot 4.7 and press F5.
+Open the project folder with Godot 4.7 or newer and press <kbd>F5</kbd>. There
+is nothing to install and no plugins to enable. The main scene is
+`scenes/main_menu/main_menu.tscn`.
 
-The tests live in `tests/`: open `tests/tests.tscn` and press **F6**, or run
-`godot --headless --script res://tests/run_tests.gd`.
+The tests live in `tests/`: open `tests/tests.tscn` and press <kbd>F6</kbd>, or
+run `godot --headless --script res://tests/run_tests.gd`.
 
-## State of the project
+Online play needs a relay to sit between the players, because a browser can
+open connections but never accept them. This game ships pointing at a public
+one; `net/net_settings.gd` holds the address and the `game_id` that keeps one
+relay usable by several games at once.
 
-The plumbing is finished and the game is assembled. The interesting parts are
-still empty, each one marked `# TODO(you)` with a description of what it has to
-do and which trap is waiting inside it. `ARCHITECTURE.md` has the ordered list
-of missions; `WORKING-METHOD.md` explains why the project is handed over this
-way.
+## Architecture
 
-Reused from Memorandum without changes: `audio_manager.gd`, `scene_switcher.gd`,
-`ui_intro.gd`, `ui_sounds.gd`, the theme and the sound effects.
+Four layers, with dependencies pointing only downwards:
+
+```
+  4. SCREENS    scenes/     what you see and click
+  3. ACTORS     players/    who decides where to play
+  2. CORE       core/       pure logic, zero nodes, testable
+  1. SERVICES   autoloads/  things that survive a scene change
+
+     NETWORK    net/        the wire, bolted on at the services layer
+```
+
+The rules that hold it together:
+
+- The **core** never mentions a node type, which is what makes it testable.
+- **One coordinator** (`scenes/game/game.gd`) knows every other piece; nobody
+  else knows more than its immediate neighbours.
+- **Call downwards, emit upwards** — a child never reaches for its parent.
+- **Single source of truth**: `BoardState` owns what is on the board, and a
+  `Cell` only draws a copy of it.
+- **Base contract plus implementations** (`Player` → `HumanPlayer` /
+  `BotPlayer` / `NetPlayer`), so there is not one `if is_bot:` in the project.
+
+Online play adds one idea rather than a second code path. The relay is
+**game-agnostic** — it knows peers, rooms and passwords, and forwards the rest
+without looking inside. The client that created the room acts as **referee**: a
+click only *asks*, and the turn loop advances for everyone on the referee's
+confirmation. The game is deterministic given the config and the sequence of
+confirmed cells, so both clients run the same `game.gd` and the entire
+networked state of a match is a list of integers.
+
+Some pieces are written to be copied straight out of here, and none of them
+knows what tic tac toe is:
+
+| Piece | Files |
+|---|---|
+| Chat | `scenes/common/chat_panel.gd`, `chat_dock.gd`, `net/room_chat.gd` |
+| Audio | `autoloads/audio_manager.gd`, `resources/audio/default_bus_layout.tres`, `scenes/common/audio_settings.gd` |
+| Rooms | `net/`, the `Net` and `Rooms` autoloads |
+| Screens | `autoloads/scene_switcher.gd`, `ui_intro.gd`, `ui_sounds.gd` |
+
+Music is a convention rather than a setting: `AudioManager` plays
+`assets/audio/music.ogg` if the file is there, in every scene, and the Music
+slider appears by itself because the settings panel builds one row per bus the
+project has.
 
 ## Palette
 
@@ -39,4 +94,6 @@ Reused from Memorandum without changes: `audio_manager.gd`, `scene_switcher.gd`,
 | `#007F5F` | X, focus, accents |
 | `#b2b2b278` | the mark about to vanish, secondary text |
 
-MIT licensed.
+## License
+
+MIT. See [LICENSE](LICENSE).
