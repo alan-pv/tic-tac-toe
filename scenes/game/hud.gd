@@ -11,7 +11,7 @@ const SCORE_ENTRY_SCENE := preload("res://scenes/game/player_score_entry.tscn")
 
 @onready var _score_container: HBoxContainer = %ScoreContainer
 @onready var _round_label: Label = %RoundLabel
-@onready var _mode_label: Label = %ModeLabel
+@onready var _mode_label: RichTextLabel = %ModeLabel
 @onready var _message_label: Label = %MessageLabel
 @onready var _pause_button: Button = %PauseButton
 
@@ -36,9 +36,9 @@ func setup(config: GameConfig) -> void:
 		_entries.append(entry)
 
 	if config.infinite_mode:
-		_mode_label.text = "Infinite  -  %d marks each" % config.max_marks_per_player
+		_mode_label.text = "[wave]Infinite  -  %d marks each" % config.max_marks_per_player
 	else:
-		_mode_label.text = "Classic"
+		_mode_label.text = "[wave]Classic"
 	set_round(1, config.rounds_to_win)
 
 

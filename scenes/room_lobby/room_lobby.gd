@@ -18,8 +18,6 @@ const READY_STATES := ["normal", "hover", "pressed", "focus"]
 @onready var _seat_list: VBoxContainer = %SeatList
 @onready var _host_box: VBoxContainer = %HostBox
 @onready var _infinite_toggle: CheckButton = %InfiniteToggle
-@onready var _marks_row: Control = %MarksRow
-@onready var _marks_spin: SpinBox = %MarksSpin
 @onready var _rounds_spin: SpinBox = %RoundsSpin
 @onready var _summary_label: Label = %SummaryLabel
 @onready var _status_label: Label = %StatusLabel
@@ -51,7 +49,6 @@ func _ready() -> void:
 	_ready_button.toggled.connect(_on_ready_toggled)
 	_start_button.pressed.connect(_on_start_pressed)
 	_infinite_toggle.toggled.connect(func(_on: bool) -> void: _refresh())
-	_marks_spin.value_changed.connect(func(_v: float) -> void: _refresh())
 	_rounds_spin.value_changed.connect(func(_v: float) -> void: _refresh())
 
 	Rooms.updated.connect(func(_room: Dictionary) -> void: _refresh())
@@ -71,7 +68,7 @@ func _ready() -> void:
 
 
 func _intro_config() -> Dictionary:
-	return {"labels": false, "buttons": false, "panels": true}
+	return {"labels": false, "buttons": true, "panels": false}
 
 
 ## The match that was just played is the one most likely to be played again.
@@ -82,7 +79,6 @@ func _seed_from_last_match() -> void:
 	if last.is_empty():
 		return
 	_infinite_toggle.button_pressed = bool(last.get("infinite", false))
-	_marks_spin.value = int(last.get("marks", 3))
 	_rounds_spin.value = int(last.get("rounds", 3))
 
 
@@ -102,10 +98,8 @@ func _refresh() -> void:
 
 	if host:
 		_infinite = _infinite_toggle.button_pressed
-		_marks = int(_marks_spin.value)
 		_rounds = int(_rounds_spin.value)
 
-	_marks_row.visible = _infinite_toggle.button_pressed
 	_rebuild_seat_list(members)
 
 	_host_box.visible = host
@@ -299,7 +293,6 @@ func _on_payload(from_id: int, payload: Dictionary) -> void:
 			_marks = clampi(int(payload.get("marks", 3)), 2, 4)
 			_rounds = clampi(int(payload.get("rounds", 3)), 1, 9)
 			_infinite_toggle.button_pressed = _infinite
-			_marks_spin.value = _marks
 			_rounds_spin.value = _rounds
 			_refresh()
 		OnlineMatch.T_START:

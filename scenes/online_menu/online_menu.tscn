@@ -1,8 +1,14 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://da8nnyrttir36"]
 
-[ext_resource type="Script" path="res://scenes/online_menu/online_menu.gd" id="1_online"]
+[ext_resource type="Script" uid="uid://shmrvp5y8gb" path="res://scenes/online_menu/online_menu.gd" id="1_online"]
+[ext_resource type="PackedScene" uid="uid://i3m3qodputoi" path="res://scenes/background/tic_tac_background.tscn" id="2_p65yh"]
+[ext_resource type="Script" uid="uid://cc0tkr4sb0csi" path="res://assets/shaders/label/rainbow.gd" id="2_sx2x4"]
 
-[node name="OnlineMenu" type="Control"]
+[sub_resource type="RichTextEffect" id="RichTextEffect_xckc6"]
+script = ExtResource("2_sx2x4")
+metadata/_custom_type_script = "uid://cc0tkr4sb0csi"
+
+[node name="OnlineMenu" type="Control" unique_id=1202575707]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +17,9 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_online")
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="TicTacBackground" parent="." unique_id=673544537 instance=ExtResource("2_p65yh")]
+
+[node name="Center" type="CenterContainer" parent="." unique_id=932358584]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,29 +28,32 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Panel" type="PanelContainer" parent="Center"]
+[node name="Panel" type="PanelContainer" parent="Center" unique_id=1023986186]
 custom_minimum_size = Vector2(620, 0)
 layout_mode = 2
 
-[node name="VBox" type="VBoxContainer" parent="Center/Panel"]
+[node name="VBox" type="VBoxContainer" parent="Center/Panel" unique_id=480951201]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Title" type="Label" parent="Center/Panel/VBox"]
+[node name="Title" type="RichTextLabel" parent="Center/Panel/VBox" unique_id=658882409]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
-theme_override_font_sizes/font_size = 34
-text = "Play online"
+bbcode_enabled = true
+text = "[rainbow][wave]Online Game"
 horizontal_alignment = 1
+custom_effects = [SubResource("RichTextEffect_xckc6")]
 
-[node name="Sep1" type="HSeparator" parent="Center/Panel/VBox"]
+[node name="Sep1" type="HSeparator" parent="Center/Panel/VBox" unique_id=438792342]
 layout_mode = 2
 
-[node name="ConnectStep" type="VBoxContainer" parent="Center/Panel/VBox"]
+[node name="ConnectStep" type="VBoxContainer" parent="Center/Panel/VBox" unique_id=638321287]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Hint" type="Label" parent="Center/Panel/VBox/ConnectStep"]
+[node name="Hint" type="Label" parent="Center/Panel/VBox/ConnectStep" unique_id=1093269212]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.69803923, 0.69803923, 0.69803923, 0.62)
 theme_override_font_sizes/font_size = 17
@@ -50,45 +61,58 @@ text = "Pick the name the other player will see."
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="ConnectRow" type="HBoxContainer" parent="Center/Panel/VBox/ConnectStep"]
+[node name="ConnectRow" type="HBoxContainer" parent="Center/Panel/VBox/ConnectStep" unique_id=41164401]
 layout_mode = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="NameLabel" type="Label" parent="Center/Panel/VBox/ConnectStep/ConnectRow"]
+[node name="NameLabel" type="Label" parent="Center/Panel/VBox/ConnectStep/ConnectRow" unique_id=459508978]
 layout_mode = 2
 text = "Name"
 
-[node name="NameField" type="LineEdit" parent="Center/Panel/VBox/ConnectStep/ConnectRow"]
+[node name="NameField" type="LineEdit" parent="Center/Panel/VBox/ConnectStep/ConnectRow" unique_id=677012752]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(260, 0)
 layout_mode = 2
 placeholder_text = "Your name"
 max_length = 16
 
-[node name="ConnectButton" type="Button" parent="Center/Panel/VBox/ConnectStep"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Center/Panel/VBox/ConnectStep" unique_id=1269564469]
+layout_mode = 2
+alignment = 1
+
+[node name="BackButton" type="Button" parent="Center/Panel/VBox/ConnectStep/HBoxContainer" unique_id=1304472921]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"RedButton"
+text = "Back"
+
+[node name="ConnectButton" type="Button" parent="Center/Panel/VBox/ConnectStep/HBoxContainer" unique_id=1777543344]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 52)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_type_variation = &"GreenButton"
 text = "Next"
 
-[node name="RoomsStep" type="VBoxContainer" parent="Center/Panel/VBox"]
+[node name="RoomsStep" type="VBoxContainer" parent="Center/Panel/VBox" unique_id=297513547]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="RoomsHeader" type="HBoxContainer" parent="Center/Panel/VBox/RoomsStep"]
+[node name="RoomsHeader" type="HBoxContainer" parent="Center/Panel/VBox/RoomsStep" unique_id=1880400283]
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="RoomsTitle" type="Label" parent="Center/Panel/VBox/RoomsStep/RoomsHeader"]
+[node name="RoomsTitle" type="Label" parent="Center/Panel/VBox/RoomsStep/RoomsHeader" unique_id=1610805745]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Rooms"
 
-[node name="IdentityLabel" type="Label" parent="Center/Panel/VBox/RoomsStep/RoomsHeader"]
+[node name="IdentityLabel" type="Label" parent="Center/Panel/VBox/RoomsStep/RoomsHeader" unique_id=1973318495]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -97,94 +121,94 @@ theme_override_font_sizes/font_size = 15
 text = "as Player"
 text_overrun_behavior = 3
 
-[node name="ChangeNameButton" type="Button" parent="Center/Panel/VBox/RoomsStep/RoomsHeader"]
+[node name="ChangeNameButton" type="Button" parent="Center/Panel/VBox/RoomsStep/RoomsHeader" unique_id=1766887602]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(175, 32)
 layout_mode = 2
+theme_type_variation = &"RedButton"
 text = "Change name"
 
-[node name="RefreshButton" type="Button" parent="Center/Panel/VBox/RoomsStep/RoomsHeader"]
+[node name="RefreshButton" type="Button" parent="Center/Panel/VBox/RoomsStep/RoomsHeader" unique_id=935112169]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(175, 32)
 layout_mode = 2
+theme_type_variation = &"YellowButton"
 text = "Refresh"
 
-[node name="RoomScroll" type="ScrollContainer" parent="Center/Panel/VBox/RoomsStep"]
+[node name="RoomScroll" type="ScrollContainer" parent="Center/Panel/VBox/RoomsStep" unique_id=2037261533]
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 horizontal_scroll_mode = 0
 
-[node name="RoomList" type="VBoxContainer" parent="Center/Panel/VBox/RoomsStep/RoomScroll"]
+[node name="RoomList" type="VBoxContainer" parent="Center/Panel/VBox/RoomsStep/RoomScroll" unique_id=1230164947]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="JoinPanel" type="PanelContainer" parent="Center/Panel/VBox/RoomsStep"]
+[node name="JoinPanel" type="PanelContainer" parent="Center/Panel/VBox/RoomsStep" unique_id=1894701792]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="JoinRow" type="HBoxContainer" parent="Center/Panel/VBox/RoomsStep/JoinPanel"]
+[node name="JoinRow" type="HBoxContainer" parent="Center/Panel/VBox/RoomsStep/JoinPanel" unique_id=350669956]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="JoinLabel" type="Label" parent="Center/Panel/VBox/RoomsStep/JoinPanel/JoinRow"]
+[node name="JoinLabel" type="Label" parent="Center/Panel/VBox/RoomsStep/JoinPanel/JoinRow" unique_id=1953549101]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Password"
 
-[node name="JoinPasswordField" type="LineEdit" parent="Center/Panel/VBox/RoomsStep/JoinPanel/JoinRow"]
+[node name="JoinPasswordField" type="LineEdit" parent="Center/Panel/VBox/RoomsStep/JoinPanel/JoinRow" unique_id=576037744]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 secret = true
 
-[node name="JoinConfirmButton" type="Button" parent="Center/Panel/VBox/RoomsStep/JoinPanel/JoinRow"]
+[node name="JoinConfirmButton" type="Button" parent="Center/Panel/VBox/RoomsStep/JoinPanel/JoinRow" unique_id=354686777]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Join"
 
-[node name="JoinCancelButton" type="Button" parent="Center/Panel/VBox/RoomsStep/JoinPanel/JoinRow"]
+[node name="JoinCancelButton" type="Button" parent="Center/Panel/VBox/RoomsStep/JoinPanel/JoinRow" unique_id=520493099]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Cancel"
 
-[node name="Sep2" type="HSeparator" parent="Center/Panel/VBox/RoomsStep"]
+[node name="Sep2" type="HSeparator" parent="Center/Panel/VBox/RoomsStep" unique_id=847095430]
 layout_mode = 2
 
-[node name="CreateRow" type="HBoxContainer" parent="Center/Panel/VBox/RoomsStep"]
+[node name="CreateRow" type="HBoxContainer" parent="Center/Panel/VBox/RoomsStep" unique_id=169212468]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="RoomNameField" type="LineEdit" parent="Center/Panel/VBox/RoomsStep/CreateRow"]
+[node name="RoomNameField" type="LineEdit" parent="Center/Panel/VBox/RoomsStep/CreateRow" unique_id=127253799]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Room name"
 max_length = 24
 
-[node name="RoomPasswordField" type="LineEdit" parent="Center/Panel/VBox/RoomsStep/CreateRow"]
+[node name="RoomPasswordField" type="LineEdit" parent="Center/Panel/VBox/RoomsStep/CreateRow" unique_id=2109128409]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 placeholder_text = "Password"
 secret = true
 
-[node name="CreateButton" type="Button" parent="Center/Panel/VBox/RoomsStep/CreateRow"]
+[node name="CreateButton" type="Button" parent="Center/Panel/VBox/RoomsStep/CreateRow" unique_id=1051885402]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
+theme_type_variation = &"GreenButton"
 text = "Create"
 
-[node name="StatusLabel" type="Label" parent="Center/Panel/VBox"]
+[node name="StatusLabel" type="Label" parent="Center/Panel/VBox" unique_id=2096412803]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.69803923, 0.69803923, 0.69803923, 0.62)
 theme_override_font_sizes/font_size = 17
 horizontal_alignment = 1
 autowrap_mode = 3
-
-[node name="BackButton" type="Button" parent="Center/Panel/VBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Back"

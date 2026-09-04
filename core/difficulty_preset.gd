@@ -5,9 +5,9 @@ extends Resource
 ## The setup screen lists whatever it finds in resources/difficulties/.
 
 
-@export var id: StringName = &"sharp"
+@export var id: StringName = &"normal"
 
-@export var display_name: String = "Sharp"
+@export var display_name: String = "Normal"
 
 @export_multiline var description: String = ""
 

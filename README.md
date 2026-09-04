@@ -10,8 +10,10 @@ about to disappear is drawn faded, so you can see it coming.
 
 ## What it does
 
-- **Classic or infinite**, two to four marks each, and a match is played to a
-  number of rounds with the players taking turns opening.
+- **Classic or infinite**, three marks each, and a match is played to a number
+  of rounds with the players taking turns opening. Every mark is drawn
+  faded by how soon its owner will push it off, so the whole board can be read
+  at a glance instead of only the next casualty.
 - **Against the bot**, which is a depth-limited minimax with alpha-beta
   pruning: at full skill it never loses. Three difficulties, kept as editable
   `.tres` resources, so balancing it is not programming.
@@ -89,10 +91,26 @@ project has.
 | | |
 |---|---|
 | `#121212` | background |
-| `#1E1E1E` | panels |
-| `#3A3A3A` | cells and buttons |
-| `#007F5F` | X, focus, accents |
+| `#1E1E1E` | panels and text fields |
+| `#2B2B2B` | cells and buttons at rest (`#3B3B3B` hovered), outlined in `#151515` |
+| `#007F5F` | X, focus rings, panel accents |
+| `#E8EDF3` | O and body text |
 | `#b2b2b278` | the mark about to vanish, secondary text |
+
+The theme also carries named button variants for the screens that need one:
+`BlueButton` `#2196F3`, `GreenButton` `#4CAF50`, `RedButton` `#F44336`,
+`PinkButton` `#F06292`.
+
+## Assets
+
+The code is MIT. Everything under `assets/` is third-party and keeps its own
+licence — check each one before reusing this repository as a starting point:
+
+| | |
+|---|---|
+| `assets/fonts/Silkscreen-Regular.ttf` | SIL Open Font License 1.1 |
+| `assets/fonts/Daydream DEMO.otf` | demo release, free for personal use only |
+| `assets/audio/` | sound effects and music, third-party |
 
 ## License
 

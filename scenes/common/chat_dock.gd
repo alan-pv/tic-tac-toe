@@ -34,7 +34,7 @@ const GAP := 6.0
 ## Distance from the corner of the screen.
 @export var margin: int = 16
 
-@export var start_open: bool = true
+@export var start_open: bool = false
 
 @export var badge_color: Color = Color(0.85, 0.24, 0.26)
 
@@ -145,6 +145,7 @@ func _build() -> void:
 	_bar = Button.new()
 	_bar.tooltip_text = "Show or hide the chat"
 	_bar.pressed.connect(toggle)
+	_bar.custom_minimum_size.x = 200
 	_column.add_child(_bar)
 
 	_badge = _build_badge()

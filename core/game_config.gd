@@ -40,7 +40,7 @@ enum Opponent {
 
 @export_group("Bot")
 
-@export var difficulty_id: StringName = &"sharp"
+@export var difficulty_id: StringName = &"normal"
 
 ## Seconds the bot pretends to think before playing.
 @export_range(0.0, 2.0, 0.05) var bot_think_time: float = 0.45

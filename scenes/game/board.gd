@@ -12,7 +12,6 @@ signal cell_clicked(index: int)
 @onready var _grid: GridContainer = %Grid
 
 var _cells: Array[Cell] = []
-var _ghost_index: int = -1
 
 
 func build() -> void:
@@ -34,9 +33,7 @@ func build() -> void:
 
 ## Wipes every mark without rebuilding the nodes. Called between rounds.
 func clear_board() -> void:
-	_ghost_index = -1
 	for cell in _cells:
-		cell.set_ghost(false)
 		cell.set_mark(Mark.Value.NONE)
 
 
@@ -44,7 +41,6 @@ func clear_cells() -> void:
 	for cell in _cells:
 		cell.queue_free()
 	_cells.clear()
-	_ghost_index = -1
 
 
 func get_cell(index: int) -> Cell:
@@ -64,7 +60,6 @@ func place(index: int, mark: int) -> void:
 	if cell == null:
 		push_warning("Board: nothing to place at index %d." % index)
 		return
-	cell.set_ghost(false)
 	cell.set_mark(mark)
 	AudioManager.play_sfx(AudioManager.SFX_PLACE)
 	await cell.play_place()
@@ -77,7 +72,6 @@ func vanish(index: int) -> void:
 		return
 	AudioManager.play_sfx(AudioManager.SFX_VANISH)
 	await cell.play_vanish()
-	cell.set_ghost(false)
 	cell.set_mark(Mark.Value.NONE)
 
 
@@ -96,17 +90,19 @@ func highlight(line: PackedInt32Array) -> void:
 			cell.play_win()
 
 
-## Fades the mark the current player is about to lose. Pass -1 for none.
-func show_ghost(index: int) -> void:
-	if _ghost_index == index:
-		return
-	var previous := get_cell(_ghost_index)
-	if previous != null:
-		previous.set_ghost(false)
-	_ghost_index = index
-	var next := get_cell(index)
-	if next != null:
-		next.set_ghost(true)
+## Fades every mark by how soon its owner will push it off the board: the one
+## going next is faintest, the one just played is untouched. Pass false to leave
+## the whole board at full strength.
+func show_lifetimes(state_board: BoardState, enabled: bool) -> void:
+	var limit := state_board.max_marks_per_player
+	for i in _cells.size():
+		if not enabled or limit < 2:
+			_cells[i].set_fade(1.0)
+			continue
+		var remaining := state_board.moves_until_vanish(i)
+		# The scale runs from the mark that goes next to the one with a full
+		# quota ahead of it, so a two mark limit still reads as two steps.
+		_cells[i].set_fade(1.0 if remaining == 0 else float(remaining - 1) / float(limit - 1))
 
 
 func _on_cell_clicked(index: int) -> void:

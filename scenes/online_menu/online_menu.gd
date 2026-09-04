@@ -69,7 +69,7 @@ func _ready() -> void:
 
 
 func _intro_config() -> Dictionary:
-	return {"labels": false, "buttons": false, "panels": true}
+	return {"labels": false, "buttons": true, "panels": false}
 
 
 func _build_refresh_timer() -> void:

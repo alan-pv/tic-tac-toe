@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DifficultyPreset" format=3 uid="uid://cvp8omdyn4ufx"]
+
+[ext_resource type="Script" uid="uid://dd1mr8ir21k6c" path="res://core/difficulty_preset.gd" id="1_preset"]
+
+[resource]
+script = ExtResource("1_preset")
+id = &"hard"
+display_name = "Hard"
+description = "Thinks before every move. Beating it should not be possible."
+bot_think_time = 0.7
+bot_skill = 1.0

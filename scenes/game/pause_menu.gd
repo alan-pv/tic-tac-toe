@@ -31,6 +31,10 @@ func _ready() -> void:
 	_audio_button.pressed.connect(func() -> void: _audio_panel.open())
 
 
+func _intro_config() -> Dictionary:
+	return {"labels": false, "buttons": true, "panels": false}
+
+
 ## An online match cannot be restarted from one screen: the other player would
 ## still be playing the old one. Quitting is still allowed — it leaves the room.
 func set_online(value: bool) -> void:

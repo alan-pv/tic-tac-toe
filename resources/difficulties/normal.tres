@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DifficultyPreset" format=3 uid="uid://crfojvuu7f6u"]
+
+[ext_resource type="Script" uid="uid://dd1mr8ir21k6c" path="res://core/difficulty_preset.gd" id="1_preset"]
+
+[resource]
+script = ExtResource("1_preset")
+id = &"normal"
+display_name = "Normal"
+description = "Takes a win when it sees one and blocks yours."
+bot_think_time = 0.45
+bot_skill = 0.75

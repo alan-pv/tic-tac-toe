@@ -11,7 +11,7 @@ var config: GameConfig
 ## Keys: "scores", "names", "winner", "rounds_played", "seconds".
 var last_result: Dictionary = {}
 
-var last_difficulty_id: StringName = &"sharp"
+var last_difficulty_id: StringName = &"normal"
 
 ## What other players see in the lobby. Kept here so it survives the trip
 ## between the online menu, the room and the match.

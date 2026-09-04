@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://i3m3qodputoi"]
+
+[ext_resource type="Texture2D" uid="uid://2p4t0dxsd4mb" path="res://assets/sprites/x.png" id="1_gam7t"]
+[ext_resource type="Texture2D" uid="uid://cikd3oygc1an5" path="res://assets/sprites/o.png" id="2_rf7o3"]
+
+[sub_resource type="Curve" id="Curve_rf7o3"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.2521994, 0.48872185), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_gam7t"]
+curve = SubResource("Curve_rf7o3")
+
+[sub_resource type="Gradient" id="Gradient_y3x36"]
+offsets = PackedFloat32Array(0, 0.568254, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.8132577, 0.8132577, 0.81325763, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_uq5k2"]
+gradient = SubResource("Gradient_y3x36")
+
+[sub_resource type="Curve" id="Curve_n3u2y"]
+_data = [Vector2(0.24633431, 1), 0.0, 0.0, 0, 0, Vector2(0.49266863, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.76691735), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_n3u2y"]
+curve = SubResource("Curve_n3u2y")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_y3x36"]
+lifetime_randomness = 0.1
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(576, 324, 1)
+angle_min = -14.9999895
+angle_max = 15.0000105
+inherit_velocity_ratio = 0.845
+spread = 180.0
+initial_velocity_min = 5.0
+initial_velocity_max = 10.0
+angular_velocity_min = -10.000016
+angular_velocity_max = 9.999984
+gravity = Vector3(0, 0, 0)
+scale_min = 2.0
+scale_max = 5.0
+scale_curve = SubResource("CurveTexture_n3u2y")
+color = Color(0.74558026, 0.7455802, 0.7455802, 1)
+color_ramp = SubResource("GradientTexture1D_uq5k2")
+alpha_curve = SubResource("CurveTexture_gam7t")
+
+[node name="TicTacBackground" type="Node2D" unique_id=673544537]
+
+[node name="XParticles" type="GPUParticles2D" parent="." unique_id=1498800836]
+position = Vector2(576, 320)
+amount = 5
+texture = ExtResource("1_gam7t")
+lifetime = 10.0
+preprocess = 60.0
+randomness = 0.6
+visibility_rect = Rect2(-101.025, -100, 200, 200)
+trail_lifetime = 9.53
+process_material = SubResource("ParticleProcessMaterial_y3x36")
+
+[node name="OParticles2" type="GPUParticles2D" parent="." unique_id=364663273]
+position = Vector2(576, 320)
+amount = 5
+texture = ExtResource("2_rf7o3")
+lifetime = 40.0
+preprocess = 60.0
+randomness = 0.6
+visibility_rect = Rect2(-101.025, -100, 200, 200)
+trail_lifetime = 9.53
+process_material = SubResource("ParticleProcessMaterial_y3x36")

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DifficultyPreset" format=3 uid="uid://dy2r147u753t6"]
+
+[ext_resource type="Script" uid="uid://dd1mr8ir21k6c" path="res://core/difficulty_preset.gd" id="1_preset"]
+
+[resource]
+script = ExtResource("1_preset")
+id = &"easy"
+display_name = "Easy"
+description = "Plays fast and does not look very far ahead."
+bot_think_time = 0.35
+bot_skill = 0.25

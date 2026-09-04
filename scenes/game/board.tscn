@@ -1,10 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://cvn4g4ixw2a6s"]
 
-[ext_resource type="Script" path="res://scenes/game/board.gd" id="1_board"]
+[ext_resource type="Script" uid="uid://dy2u3eqayrbr5" path="res://scenes/game/board.gd" id="1_board"]
 [ext_resource type="PackedScene" path="res://scenes/game/cell.tscn" id="2_cell"]
 
-[node name="Board" type="AspectRatioContainer"]
-layout_mode = 3
+[node name="Board" type="AspectRatioContainer" unique_id=1824426490]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -14,7 +13,7 @@ mouse_filter = 2
 script = ExtResource("1_board")
 cell_scene = ExtResource("2_cell")
 
-[node name="Grid" type="GridContainer" parent="."]
+[node name="Grid" type="GridContainer" parent="." unique_id=1511430066]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2

@@ -101,22 +101,47 @@ func test_a_player_only_pushes_their_own_marks_off() -> void:
 	eq(board.order_for(Mark.Value.O).size(), 3, "O still has three marks")
 
 
-func test_the_warning_points_at_the_oldest_mark() -> void:
+func test_a_full_quota_counts_down_from_the_oldest_mark() -> void:
 	var board := _infinite(3)
-	eq(board.next_to_vanish(Mark.Value.X), -1, "nothing to warn about on an empty board")
+	for i in [0, 1, 2]:
+		board.place(i, Mark.Value.X)
+	eq(board.moves_until_vanish(0), 1, "the oldest X goes on the next X move")
+	eq(board.moves_until_vanish(1), 2, "the next one after that")
+	eq(board.moves_until_vanish(2), 3, "the mark just played has the whole quota")
+
+
+## Below the limit a placement evicts nothing, so everything is one move safer
+## for every slot still free.
+func test_marks_below_the_limit_get_a_reprieve() -> void:
+	var board := _infinite(3)
 	board.place(0, Mark.Value.X)
+	eq(board.moves_until_vanish(0), 3, "two more X can be placed before it goes")
 	board.place(1, Mark.Value.X)
-	eq(board.next_to_vanish(Mark.Value.X), -1, "still below the limit")
-	board.place(2, Mark.Value.X)
-	
-	eq(board.next_to_vanish(Mark.Value.X), 0, "the oldest X is the one at risk")
+	eq(board.moves_until_vanish(0), 2, "one more now")
+	eq(board.moves_until_vanish(1), 3, "and the newer one is still untouchable")
 
 
-func test_the_classic_game_warns_about_nothing() -> void:
+func test_each_player_is_counted_on_their_own() -> void:
+	var board := _infinite(2)
+	board.place(0, Mark.Value.X)
+	board.place(4, Mark.Value.O)
+	board.place(1, Mark.Value.X)
+	eq(board.moves_until_vanish(0), 1, "X is at the limit, so its oldest is next")
+	eq(board.moves_until_vanish(4), 2, "O has placed once and is in no danger")
+
+
+func test_nothing_ever_vanishes_in_the_classic_game() -> void:
 	var board := _classic()
 	for i in [0, 1, 2, 3, 4]:
 		board.place(i, Mark.Value.X)
-	eq(board.next_to_vanish(Mark.Value.X), -1, "no limit means no warning")
+	eq(board.moves_until_vanish(0), 0, "no limit means nothing is ever pushed off")
+
+
+func test_an_empty_cell_is_waiting_for_nothing() -> void:
+	var board := _infinite(3)
+	board.place(0, Mark.Value.X)
+	eq(board.moves_until_vanish(7), 0, "there is no mark there to lose")
+	eq(board.moves_until_vanish(-1), 0, "and nothing outside the board either")
 
 
 func test_a_clone_is_independent() -> void:

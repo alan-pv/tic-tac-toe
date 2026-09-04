@@ -100,13 +100,24 @@ func place(index: int, mark: int) -> int:
 	return vanished
 
 
-## Which cell of that player their NEXT move will empty, or -1. The board fades
-## that mark as a warning, so this must not change anything.
-func next_to_vanish(mark: int) -> int:
+## How many more moves by its owner before the mark in this cell is pushed off
+## the board. 0 when nothing is ever going to push it off: the classic game, or
+## an empty cell. The board fades every mark by this, so it must change nothing.
+##
+## A mark leaves once its owner has filled their quota and places again, so the
+## count is how far down the queue it sits plus the placements still needed to
+## reach the limit.
+func moves_until_vanish(index: int) -> int:
+	if max_marks_per_player == 0:
+		return 0
+	var mark := mark_at(index)
+	if mark == Mark.Value.NONE:
+		return 0
 	var order := order_for(mark)
-	if max_marks_per_player != 0 and order.size() >= max_marks_per_player:
-		return order[0]
-	return -1
+	var position := order.find(index)
+	if position < 0:
+		return 0
+	return position + 1 + (max_marks_per_player - order.size())
 
 
 func is_full() -> bool:

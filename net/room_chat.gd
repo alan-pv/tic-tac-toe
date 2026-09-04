@@ -3,7 +3,7 @@ extends Node
 
 ## Carries a ChatPanel's lines over the relay, and narrates who comes and goes.
 ##
-## Nothing here is about memory games: it rides inside the same opaque payload
+## Nothing here is about tic tac toe: it rides inside the same opaque payload
 ## every other game message uses, so a new project reuses it by copying this
 ## file, chat_panel.gd and chat_dock.gd. One line puts a chat in the corner of
 ## any screen that lives inside a room:
@@ -51,7 +51,7 @@ func _ready() -> void:
 
 ## Everything at once: a folding chat in the corner of `host`, a carrier under
 ## it, and whatever was already said back on screen.
-static func spawn(host: Node, open: bool = true) -> ChatDock:
+static func spawn(host: Node, open: bool = false) -> ChatDock:
 	var dock := ChatDock.new()
 	dock.start_open = open
 	host.add_child(dock)

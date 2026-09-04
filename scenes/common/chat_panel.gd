@@ -48,7 +48,6 @@ func _build() -> void:
 	if not title.is_empty():
 		var caption := Label.new()
 		caption.text = title
-		caption.add_theme_font_size_override("font_size", 20)
 		box.add_child(caption)
 
 	_log = RichTextLabel.new()
@@ -57,6 +56,7 @@ func _build() -> void:
 	# bottom, so scrolling up to re-read something is not yanked away.
 	_log.scroll_following = true
 	_log.selection_enabled = true
+	_log.add_theme_font_size_override("normal_font_size", 16)
 	_log.focus_mode = Control.FOCUS_NONE
 	_log.custom_minimum_size = Vector2(0, log_height)
 	_log.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -69,12 +69,14 @@ func _build() -> void:
 	_field = LineEdit.new()
 	_field.placeholder_text = placeholder
 	_field.max_length = max_length
+	_field.add_theme_font_size_override("font_size", 16)
 	_field.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_field.text_submitted.connect(_on_submitted)
 	row.add_child(_field)
 
 	_send_button = Button.new()
 	_send_button.text = "Send"
+	_send_button.custom_minimum_size.x = 120
 	_send_button.pressed.connect(func() -> void: _on_submitted(_field.text))
 	row.add_child(_send_button)
 

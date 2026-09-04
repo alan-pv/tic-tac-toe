@@ -1,7 +1,7 @@
 extends NetProtocol
 
 ## Autoload "Net": the socket, the handshake and the connection state machine.
-## Knows about connecting, not about rooms or about memory games.
+## Knows about connecting, not about rooms and not about tic tac toe.
 
 
 signal state_changed(state: State)

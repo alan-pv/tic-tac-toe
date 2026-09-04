@@ -145,12 +145,12 @@ func _run_match() -> void:
 
 func _play_round() -> void:
 	var moves := 0
+	_refresh_fades()
 
 	while _running and moves < MOVE_GUARD:
 		moves += 1
 		var player := players[state.current_player]
 		board.set_interactive(player.is_human)
-		_refresh_ghost()
 
 		# call_deferred: a bot with think_time 0 would emit picked before the
 		# await below is listening, and the turn would hang forever.
@@ -160,7 +160,6 @@ func _play_round() -> void:
 			return
 
 		board.set_interactive(false)
-		board.show_ghost(-1)
 
 		var result := state.play(index)
 		if not result.is_valid():
@@ -172,6 +171,11 @@ func _play_round() -> void:
 			await board.vanish(result.vanished_index)
 		if not _running:
 			return
+
+		# Every mark on the table is one move closer to leaving it. This has to
+		# wait for the animations: until they are done the mark that was pushed
+		# off is still on screen, and the board would brighten it on its way out.
+		_refresh_fades()
 
 		# The move is on every board now, so the next one can be asked for.
 		if online != null:
@@ -223,12 +227,10 @@ func _finish_match() -> void:
 	SceneSwitcher.go_to(SceneSwitcher.RESULTS, false)
 
 
-## Fades the mark the current player is about to lose, if the mode calls for it.
-func _refresh_ghost() -> void:
-	if not config.infinite_mode or not config.telegraph_vanish:
-		board.show_ghost(-1)
-		return
-	board.show_ghost(state.board.next_to_vanish(state.current_mark()))
+## Fades every mark by how close it is to being pushed off the board, so the
+## whole table can be read at a glance rather than only the next casualty.
+func _refresh_fades() -> void:
+	board.show_lifetimes(state.board, config.infinite_mode and config.telegraph_vanish)
 
 
 # ---------------------------------------------------------------- wiring
