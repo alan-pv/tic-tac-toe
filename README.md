@@ -8,6 +8,8 @@ board: the next one you place pushes your oldest one off. The board never fills
 up, nothing you build is ever safe, and no round can end in a draw. The mark
 about to disappear is drawn faded, so you can see it coming.
 
+![A match in infinite mode, from the setup screen to the result](docs/gameplay.gif)
+
 ## What it does
 
 - **Classic or infinite**, three marks each, and a match is played to a number
@@ -24,6 +26,15 @@ about to disappear is drawn faded, so you can see it coming.
   walks off mid-match a bot takes their seat and the game carries on.
 - Sound effects and **background music**, with a volume slider per audio bus,
   remembered between runs; a staggered UI intro and a shared theme.
+
+## The screens
+
+| | |
+|---|---|
+| ![The title screen](docs/main-menu.png) | ![Choosing the opponent, the difficulty, the mode and the length of the match](docs/match-setup.png) |
+| **Title.** Local or online, and the audio settings behind their own button. | **Match setup.** The bot's difficulty only appears when there is a bot to set. |
+| ![A round of infinite mode with the winning line lit up](docs/infinite-match.png) | ![A room waiting for the other player, with the chat folded into the corner](docs/room-lobby.png) |
+| **Infinite mode.** The faded O in the bottom row is the one its owner is about to push off. | **A room.** Its code, who is in it, the match the host is putting together, and the chat. |
 
 ## Running it
 
@@ -49,7 +60,7 @@ Four layers, with dependencies pointing only downwards:
   2. CORE       core/       pure logic, zero nodes, testable
   1. SERVICES   autoloads/  things that survive a scene change
 
-     NETWORK    net/        the wire, bolted on at the services layer
+	 NETWORK    net/        the wire, bolted on at the services layer
 ```
 
 The rules that hold it together:
